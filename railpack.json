@@ -1,25 +1,17 @@
 {
   "$schema": "https://railpack.com/schema.json",
-  "providers": ["php"],
   "php": {
     "version": "8.2",
-    "extensions": {
-      "enabled": [
-        "gd",
-        "ctype",
-        "curl",
-        "dom",
-        "fileinfo",
-        "filter",
-        "hash",
-        "mbstring",
-        "openssl",
-        "pcre",
-        "pdo",
-        "session",
-        "tokenizer",
-        "xml"
-      ]
-    }
+    "extensions": [
+      "gd",
+      "zip",
+      "intl",
+      "simplexml",
+      "xml",
+      "pdo_mysql",
+      "mbstring",
+      "bcmath",
+      "exif"
+    ]
   }
 }
