@@ -1,14 +1,10 @@
 [phases.setup]
-nixPkgs = ["php82", "php82Extensions.gd"]
-
-[phases.install]
-cmds = [
-  "composer install --no-dev --optimize-autoloader",
-  "npm install"
-]
+nixPkgs = ["php82", "php82Extensions.gd", "php82Extensions.zip"]
 
 [phases.build]
 cmds = [
+  "composer install --no-dev --optimize-autoloader",
+  "npm install",
   "npm run build",
   "php artisan config:cache",
   "php artisan route:cache",
