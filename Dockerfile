@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Install dependencies
+# Install system packages
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -14,47 +14,35 @@ RUN apt-get update && apt-get install -y \
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-        pdo \
-        pdo_mysql \
-        zip \
-        gd
+    && docker-php-ext-install pdo pdo_mysql zip gd
 
-# FIX APACHE MPM CONFLICT
-RUN a2dismod mpm_event
-RUN a2dismod mpm_worker || true
-RUN a2enmod mpm_prefork
-
-# Enable rewrite
+# ONLY enable rewrite
 RUN a2enmod rewrite
 
-# Install Composer
+# Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy files
 COPY . .
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Laravel permissions
-RUN chmod -R 775 storage bootstrap/cache
+RUN chmod -R 777 storage bootstrap/cache
 
-# Apache document root
+# Apache public folder
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
-# Update Apache config
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/*.conf \
-    /etc/apache2/apache2.conf \
-    /etc/apache2/conf-available/*.conf
+/etc/apache2/sites-available/*.conf \
+/etc/apache2/apache2.conf \
+/etc/apache2/conf-available/*.conf
 
-# Laravel cache cleanup
+# Clear Laravel cache
 RUN php artisan optimize:clear || true
 
 EXPOSE 80
