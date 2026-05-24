@@ -1,12 +1,12 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
-# Install system dependencies
+# Install dependencies
 RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    zip \
-    unzip \
     git \
+    unzip \
+    zip \
     curl \
+    libzip-dev \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev
@@ -19,37 +19,23 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         zip \
         gd
 
-# FIX APACHE MPM CONFLICT
-RUN a2dismod mpm_event || true
-RUN a2enmod mpm_prefork
-
-# Enable rewrite
-RUN a2enmod rewrite
-
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /app
 
-# Copy project files
+# Copy project
 COPY . .
 
 # Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# Laravel permissions
-RUN chmod -R 775 storage bootstrap/cache
+# Laravel cache permissions
+RUN chmod -R 777 storage bootstrap/cache
 
-# Apache document root
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+# Expose Railway port
+EXPOSE 8080
 
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/*.conf \
-    /etc/apache2/apache2.conf \
-    /etc/apache2/conf-available/*.conf
-
-EXPOSE 80
-
-# Start Apache
-CMD ["apache2-foreground"]
+# Start Laravel server
+CMD php artisan serve --host=0.0.0.0 --port=8080
