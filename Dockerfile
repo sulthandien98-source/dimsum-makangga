@@ -1,31 +1,45 @@
 FROM php:8.2-apache
 
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     libzip-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
     zip \
     unzip \
     git \
     curl \
-    && docker-php-ext-install pdo pdo_mysql
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_mysql zip
 
+# Enable apache rewrite
 RUN a2enmod rewrite
 
+# Fix Apache MPM conflict
+RUN a2dismod mpm_event && a2enmod mpm_prefork
+
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Copy project
 COPY . .
 
+# Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-RUN chown -R www-data:www-data /var/www/html/storage
+# Laravel permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-RUN php artisan config:clear || true
+# Clear cache
 RUN php artisan cache:clear || true
+RUN php artisan config:clear || true
+RUN php artisan route:clear || true
+RUN php artisan view:clear || true
 
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
+# Apache document root
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
@@ -34,5 +48,3 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
     /etc/apache2/conf-available/*.conf
 
 EXPOSE 80
-
-CMD ["apache2-foreground"]
