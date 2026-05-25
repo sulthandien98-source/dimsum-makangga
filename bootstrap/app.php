@@ -15,12 +15,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
     ->withMiddleware(function (Middleware $middleware) {
 
-        /*
-        |--------------------------------------------------------------------------
-        | TRUST PROXIES (RAILWAY HTTPS)
-        |--------------------------------------------------------------------------
-        */
-
         $middleware->trustProxies(
             at: '*',
             headers:
@@ -29,12 +23,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 Request::HEADER_X_FORWARDED_PORT |
                 Request::HEADER_X_FORWARDED_PROTO
         );
-
-        /*
-        |--------------------------------------------------------------------------
-        | MIDDLEWARE ALIAS
-        |--------------------------------------------------------------------------
-        */
 
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,

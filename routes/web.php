@@ -2,8 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
@@ -237,31 +235,6 @@ Route::middleware(['auth', 'admin'])
                     ->name('delete');
             });
 });
-
-
-/*
-|--------------------------------------------------------------------------
-| CREATE ADMIN TEMPORARY ROUTE
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/create-admin', function () {
-
-    $user = User::updateOrCreate(
-        ['email' => 'admin@gmail.com'],
-        [
-            'name' => 'Administrator',
-            'password' => Hash::make('admin123'),
-            'role' => 'admin',
-        ]
-    );
-
-    return response()->json([
-        'message' => 'Admin berhasil dibuat',
-        'user' => $user
-    ]);
-});
-
 
 /*
 |--------------------------------------------------------------------------
