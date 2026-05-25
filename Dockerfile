@@ -41,7 +41,7 @@ RUN php artisan cache:clear || true
 RUN php artisan view:clear || true
 
 # Permissions
-RUN chmod -R 775 storage bootstrap/cache
+RUN chmod -R 777 storage bootstrap/cache
 
 # Railway port
 EXPOSE 8080
