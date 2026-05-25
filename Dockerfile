@@ -17,28 +17,33 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql zip gd
 
-# Enable rewrite ONLY
+# IMPORTANT: remove conflicting MPM modules
+RUN a2dismod mpm_event || true
+RUN a2dismod mpm_worker || true
+RUN a2enmod mpm_prefork
+
+# Enable rewrite
 RUN a2enmod rewrite
 
-# Install Composer
+# Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Working directory
+# Workdir
 WORKDIR /var/www/html
 
 # Copy project
 COPY . .
 
-# Install Composer dependencies
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Install npm dependencies
+# Install frontend dependencies
 RUN npm install
 
 # Build Vite
 RUN npm run build
 
-# Laravel clear cache
+# Clear Laravel cache
 RUN php artisan config:clear || true
 RUN php artisan cache:clear || true
 RUN php artisan view:clear || true
@@ -46,7 +51,7 @@ RUN php artisan view:clear || true
 # Permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Apache public path
+# Apache document root
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
