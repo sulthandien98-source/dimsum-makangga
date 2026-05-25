@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         // Admin
         User::firstOrCreate(
-            ['email' => 'admin@dimsummakangga.com'],
+            ['email' => 'admin@gmail.com'],
             [
                 'name'     => 'Administrator',
                 'password' => Hash::make('admin123'),
@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
 
         // Test User
         User::firstOrCreate(
-            ['email' => 'user@dimsummakangga.com'],
+            ['email' => 'user@gmail.com'],
             [
                 'name'     => 'Test User',
                 'password' => Hash::make('user123'),
