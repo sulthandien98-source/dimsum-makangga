@@ -2,221 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-/* =========================
-   🌈 GLOBAL BASE
-========================= */
-body {
-    @apply bg-gradient-to-br from-orange-400 via-red-400 to-red-500 
-           min-h-screen text-gray-800;
-}
-
-/* Container biar rapi */
-.container-custom {
-    @apply max-w-6xl mx-auto px-4;
-}
-
-/* =========================
-   🧊 CARD (GLASS + SOLID HYBRID)
-========================= */
-.card {
-    @apply bg-white/90 backdrop-blur-md p-6 rounded-2xl 
-           shadow-xl border border-white/40
-           transition duration-300;
-}
-
-.card-glass {
-    @apply bg-white/20 backdrop-blur-xl p-6 rounded-2xl 
-           shadow-xl border border-white/20 text-white;
-}
-
-.card:hover {
-    @apply scale-[1.02] shadow-2xl;
-}
-
-/* =========================
-   🔘 BUTTONS
-========================= */
-.btn {
-    @apply px-4 py-2 rounded-xl font-semibold 
-           transition duration-200 flex items-center justify-center gap-2;
-}
-
-.btn-primary {
-    @apply bg-red-500 text-white 
-           hover:bg-red-600 active:scale-95 shadow-lg;
-}
-
-.btn-secondary {
-    @apply bg-white text-gray-700 border border-gray-300
-           hover:bg-gray-100 active:scale-95;
-}
-
-.btn-danger {
-    @apply bg-red-600 text-white 
-           hover:bg-red-700 active:scale-95 shadow-lg;
-}
-
-/* =========================
-   ✏️ INPUT
-========================= */
-.input {
-    @apply w-full p-3 rounded-xl 
-           bg-white border border-gray-300 
-           text-gray-800 placeholder-gray-400
-           focus:outline-none focus:ring-2 focus:ring-red-400;
-}
-
-/* =========================
-   🏷️ BADGE (STATUS)
-========================= */
-.badge {
-    @apply text-xs px-3 py-1 rounded-full font-semibold;
-}
-
-.badge-success {
-    @apply bg-green-500 text-white;
-}
-
-.badge-warning {
-    @apply bg-yellow-400 text-black;
-}
-
-.badge-danger {
-    @apply bg-red-500 text-white;
-}
-
-/* =========================
-   🧾 TABLE STYLE (ADMIN)
-========================= */
-.table {
-    @apply w-full text-sm text-gray-700 bg-white rounded-xl overflow-hidden;
-}
-
-.table th {
-    @apply text-left py-3 px-4 bg-gray-100 text-gray-600;
-}
-
-.table td {
-    @apply py-3 px-4 border-b border-gray-200;
-}
-
-/* =========================
-   ✨ ANIMATION
-========================= */
-.fade-in {
-    animation: fadeIn 0.5s ease-in-out forwards;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px);}
-    to { opacity: 1; transform: translateY(0);}
-}
-
-:root {
-    --bg-main: #0d0d0d;
-    --bg-card: #161616;
-    --bg-soft: #1f1f1f;
-    --border: #262626;
-    --text-main: #e5e7eb;
-    --text-muted: #9ca3af;
-    --primary: #f97316;
+html {
+    scroll-behavior: smooth;
 }
 
 body {
-    background: var(--bg-main);
-    color: var(--text-main);
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    overflow-x: hidden;
 }
 
-/* CARD */
-.card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    transition: 0.25s;
+[x-cloak] {
+    display: none !important;
 }
 
-/* BUTTON */
-.btn {
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-weight: 700;
+.container-main {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.card-modern {
+    @apply bg-white rounded-3xl border border-slate-100 shadow-sm transition-all duration-300;
+}
+
+.card-modern:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,.08);
 }
 
 .btn-primary {
-    background: var(--primary);
-    color: white;
+    @apply bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5 py-3 rounded-2xl transition-all duration-300;
 }
 
-.btn-primary:hover {
-    background: #ea580c;
+.input-modern {
+    @apply w-full rounded-2xl border border-slate-200 px-4 py-3 focus:ring-2 focus:ring-orange-400 focus:border-orange-400;
 }
 
-/* INPUT */
-.input, .select {
-    width: 100%;
-    background: var(--bg-soft);
-    border: 1px solid var(--border);
-    color: var(--text-main);
-    padding: 10px;
-    border-radius: 10px;
+.animate-fade {
+    animation: fade .5s ease;
 }
 
-/* BADGE */
-.badge {
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-}
-
-.badge-pending { background: #78350f; color: #fdba74; }
-.badge-proses { background: #1e3a8a; color: #93c5fd; }
-.badge-selesai { background: #14532d; color: #86efac; }
-
-/* ===== FINAL RESPONSIVE UI ===== */
-
-html,body{
-    overflow-x:hidden;
-    background:#f8fafc;
-}
-
-img{
-    max-width:100%;
-    height:auto;
-}
-
-.card-modern{
-    background:#fff;
-    border-radius:24px;
-    box-shadow:0 10px 30px rgba(0,0,0,.05);
-    transition:.3s;
-}
-
-.card-modern:hover{
-    transform:translateY(-5px);
-}
-
-@media(max-width:768px){
-
-    .grid{
-        grid-template-columns:1fr !important;
+@keyframes fade {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
     }
 
-    table{
-        display:block;
-        overflow-x:auto;
-    }
-
-    h1{
-        font-size:1.8rem !important;
-    }
-
-    h2{
-        font-size:1.2rem !important;
-    }
-
-    .mobile-full{
-        width:100% !important;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
