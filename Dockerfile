@@ -13,12 +13,12 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     npm
 
-# PHP Extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql zip gd
+# PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install pdo pdo_mysql zip gd
 
-# FIX APACHE MPM
-RUN a2dismod mpm_event || true
+# FIX APACHE MPM CONFLICT
+RUN a2dismod mpm_event
 RUN a2dismod mpm_worker || true
 RUN a2enmod mpm_prefork
 
@@ -34,23 +34,20 @@ WORKDIR /var/www/html
 # Copy project
 COPY . .
 
-# Install composer
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Install npm
+# Install npm dependencies
 RUN npm install
 
-# Build vite
+# Build frontend
 RUN npm run build
 
-# Laravel clear cache
+# Laravel cache clear
 RUN php artisan config:clear || true
 RUN php artisan cache:clear || true
 RUN php artisan route:clear || true
 RUN php artisan view:clear || true
-
-# Storage link
-RUN php artisan storage:link || true
 
 # Permission
 RUN chmod -R 775 storage bootstrap/cache
@@ -59,6 +56,6 @@ RUN chmod -R 775 storage bootstrap/cache
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-/etc/apache2/sites-available/000-default.conf
+    /etc/apache2/sites-available/*.conf
 
 EXPOSE 80
