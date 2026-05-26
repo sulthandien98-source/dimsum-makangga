@@ -49,3 +49,130 @@ body {
         transform: translateY(-12px);
     }
 }
+
+/* ===== FINAL MODERN UI/UX RESPONSIVE PATCH ===== */
+
+body{
+    background:#f8fafc !important;
+    color:#0f172a !important;
+    overflow-x:hidden;
+}
+
+.container-responsive{
+    width:100%;
+    max-width:1280px;
+    margin:auto;
+    padding-left:1rem;
+    padding-right:1rem;
+}
+
+.glass-card{
+    background:rgba(255,255,255,0.85);
+    backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,0.5);
+    box-shadow:0 10px 30px rgba(0,0,0,0.06);
+    border-radius:24px;
+}
+
+.btn-modern{
+    background:linear-gradient(135deg,#f97316,#fb923c);
+    color:white;
+    border-radius:16px;
+    padding:12px 22px;
+    transition:all .3s ease;
+    font-weight:600;
+}
+
+.btn-modern:hover{
+    transform:translateY(-3px);
+    box-shadow:0 15px 25px rgba(249,115,22,.25);
+}
+
+.card-modern{
+    background:white;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:0 10px 35px rgba(0,0,0,0.05);
+    transition:.3s ease;
+}
+
+.card-modern:hover{
+    transform:translateY(-6px);
+}
+
+img{
+    max-width:100%;
+    height:auto;
+}
+
+table{
+    width:100%;
+    overflow-x:auto;
+    display:block;
+}
+
+@media(max-width:768px){
+
+    body{
+        overflow-x:hidden !important;
+    }
+
+    .mobile-stack{
+        flex-direction:column !important;
+    }
+
+    .mobile-full{
+        width:100% !important;
+    }
+
+    .mobile-center{
+        text-align:center !important;
+    }
+
+    h1{
+        font-size:2rem !important;
+        line-height:1.2 !important;
+    }
+
+    h2{
+        font-size:1.5rem !important;
+    }
+
+    .card-modern{
+        padding:18px;
+        border-radius:20px;
+    }
+
+    nav{
+        padding-top:10px;
+        padding-bottom:10px;
+    }
+
+    .grid{
+        grid-template-columns:1fr !important;
+    }
+
+    .overflow-table{
+        overflow-x:auto;
+    }
+
+    table{
+        min-width:700px;
+    }
+}
+
+/* animation */
+.fade-in{
+    animation:fadeIn .8s ease forwards;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(25px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
