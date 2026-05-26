@@ -63,10 +63,10 @@
 </head>
 
 <body>
-<div class="flex min-h-screen">
+<div class="flex flex-col lg:flex-row min-h-screen">
 
     <!-- ===== SIDEBAR ===== -->
-    <aside class="w-64 flex flex-col justify-between p-5"
+    <aside class="w-full lg:w-64 flex flex-col justify-between p-5"
            style="background: rgba(0,0,0,0.4); border-right:1px solid rgba(255,180,60,0.12);">
 
         <div>
@@ -167,7 +167,7 @@
     </aside>
 
     <!-- ===== MAIN ===== -->
-    <main class="flex-1">
+    <main class="flex-1 w-full overflow-x-hidden">
 
         <!-- HEADER -->
         <div class="px-8 py-4 flex justify-between"

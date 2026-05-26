@@ -222,75 +222,188 @@ const IS_AUTH = {{ auth()->check() ? 'true' : 'false' }};
 
 function cartApp() {
     return {
-        cart: {}, adding: null, cartError: null,
+        cart: {},
+        adding: null,
+        cartError: null,
 
         async init() {
             if (!IS_AUTH) return;
+
             try {
-                const r = await fetch('/cart');
-                this.cart = await r.json();
-            } catch(e) { this.cart = {}; }
+                const response = await fetch('/cart', {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    this.cart = {};
+                    return;
+                }
+
+                const data = await response.json();
+
+                this.cart = data || {};
+
+            } catch (error) {
+                console.error('INIT CART ERROR:', error);
+                this.cart = {};
+            }
         },
 
         get items() {
-            return Object.entries(this.cart).map(([id, item]) => ({...item, id: Number(id)}));
+            return Object.entries(this.cart).map(([id, item]) => ({
+                id: Number(id),
+
+                name: item.name || 'Produk',
+
+                qty: Number(item.qty || 0),
+
+                price: Number(item.price || 0)
+            }));
         },
+
         get total() {
-            return this.items.reduce((t, i) => t + i.qty * i.price, 0);
+            return this.items.reduce((total, item) => {
+                return total + (Number(item.qty) * Number(item.price));
+            }, 0);
         },
 
         async add(id) {
+
             if (!IS_AUTH) {
-                document.getElementById('loginModal').classList.remove('hidden');
+                document.getElementById('loginModal')
+                    .classList.remove('hidden');
                 return;
             }
-            this.adding = id; this.cartError = null;
+
+            this.adding = id;
+            this.cartError = null;
+
             try {
-                const r = await fetch('/cart/add', {
+
+                const response = await fetch('/cart/add', {
                     method: 'POST',
+
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'Accept': 'application/json',
+
+                        'X-CSRF-TOKEN':
+                            document.querySelector(
+                                'meta[name="csrf-token"]'
+                            ).content
                     },
-                    body: JSON.stringify({id})
+
+                    body: JSON.stringify({
+                        id: Number(id)
+                    })
                 });
-                if (r.status === 401) { window.location.href = '{{ route("login") }}'; return; }
-                if (r.status === 422) {
-                    const d = await r.json();
-                    this.cartError = d.error || 'Stok tidak mencukupi';
-                    setTimeout(() => this.cartError = null, 3000);
+
+                if (response.status === 401) {
+                    window.location.href = '{{ route("login") }}';
                     return;
                 }
-                this.cart = await r.json();
-            } catch(e) { console.error(e); }
-            finally { this.adding = null; }
+
+                const data = await response.json();
+
+                if (response.status === 422) {
+
+                    this.cartError =
+                        data.error ||
+                        'Stok tidak mencukupi';
+
+                    setTimeout(() => {
+                        this.cartError = null;
+                    }, 3000);
+
+                    return;
+                }
+
+                this.cart = data || {};
+
+            } catch (error) {
+
+                console.error('ADD CART ERROR:', error);
+
+                this.cartError = 'Gagal menambahkan produk';
+
+            } finally {
+
+                this.adding = null;
+            }
         },
 
         async update(id, action) {
+
             if (!IS_AUTH) return;
+
             try {
-                const r = await fetch('/cart/update', {
+
+                const response = await fetch('/cart/update', {
                     method: 'POST',
+
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'Accept': 'application/json',
+
+                        'X-CSRF-TOKEN':
+                            document.querySelector(
+                                'meta[name="csrf-token"]'
+                            ).content
                     },
-                    body: JSON.stringify({id, action})
+
+                    body: JSON.stringify({
+                        id: Number(id),
+                        action: action
+                    })
                 });
-                if (r.status === 401) { window.location.href = '{{ route("login") }}'; return; }
-                this.cart = await r.json();
-            } catch(e) { console.error(e); }
+
+                if (response.status === 401) {
+
+                    window.location.href =
+                        '{{ route("login") }}';
+
+                    return;
+                }
+
+                const data = await response.json();
+
+                this.cart = data || {};
+
+            } catch (error) {
+
+                console.error('UPDATE CART ERROR:', error);
+            }
         },
 
         async clearCart() {
+
             if (!IS_AUTH) return;
+
             try {
-                const r = await fetch('/cart/clear', {
+
+                const response = await fetch('/cart/clear', {
                     method: 'POST',
-                    headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content}
+
+                    headers: {
+                        'Accept': 'application/json',
+
+                        'X-CSRF-TOKEN':
+                            document.querySelector(
+                                'meta[name="csrf-token"]'
+                            ).content
+                    }
                 });
-                this.cart = await r.json();
-            } catch(e) { console.error(e); }
+
+                const data = await response.json();
+
+                this.cart = data || {};
+
+            } catch (error) {
+
+                console.error('CLEAR CART ERROR:', error);
+            }
         }
     }
 }

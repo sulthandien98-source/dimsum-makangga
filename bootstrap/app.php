@@ -14,10 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
     ->withMiddleware(function (Middleware $middleware) {
 
-        // TRUST PROXY RAILWAY
+        // TRUST PROXY RAILWAY HTTPS
         $middleware->trustProxies(at: '*');
 
-        // ALIAS
+        // MIDDLEWARE ALIAS
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
