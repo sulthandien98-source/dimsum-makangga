@@ -197,7 +197,7 @@
         </div>
         @endif
 
-        <div class="p-8">
+        <div class="p-4 lg:p-8">
             @yield('content')
         </div>
 

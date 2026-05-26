@@ -254,18 +254,15 @@ function cartApp() {
         get items() {
             return Object.entries(this.cart).map(([id, item]) => ({
                 id: Number(id),
-
                 name: item.name || 'Produk',
-
                 qty: Number(item.qty || 0),
-
                 price: Number(item.price || 0)
             }));
         },
 
         get total() {
             return this.items.reduce((total, item) => {
-                return total + (Number(item.qty) * Number(item.price));
+            return total + (Number(item.qty) * Number(item.price));
             }, 0);
         },
 
