@@ -1,11 +1,16 @@
-import './bootstrap';
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
 
-window.addEventListener('scroll', () => {
-    document.querySelectorAll('.animate-on-scroll').forEach((el) => {
-        const position = el.getBoundingClientRect().top;
+window.Pusher = Pusher;
 
-        if (position < window.innerHeight - 100) {
-            el.classList.add('show');
-        }
-    });
+window.Echo = new Echo({
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+
+    wsHost: import.meta.env.VITE_REVERB_HOST ?? window.location.hostname,
+    wsPort: Number(import.meta.env.VITE_REVERB_PORT ?? 8080),
+    wssPort: Number(import.meta.env.VITE_REVERB_PORT ?? 443),
+
+    forceTLS: false, // 🔥 localhost
+    enabledTransports: ['ws'],
 });

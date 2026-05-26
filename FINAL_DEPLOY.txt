@@ -1,0 +1,26 @@
+LANGKAH FINAL:
+
+1. Extract semua file ke project Laravel
+2. Jalankan:
+npm install
+npm run build
+
+3. Push GitHub:
+git add .
+git commit -m "final fix"
+git push
+
+4. Railway otomatis redeploy
+
+5. Login:
+email: admin@gmail.com
+password: admin123
+
+PERBAIKAN:
+- Fix cart
+- Fix add to cart
+- Fix responsive mobile
+- Fix UI modern
+- Fix session cart
+- Fix guest cart
+- Fix animation

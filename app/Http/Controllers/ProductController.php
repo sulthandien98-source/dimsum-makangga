@@ -59,7 +59,7 @@ class ProductController extends Controller
 
         session()->put('cart', $cart);
 
-        return response()->json(['cart' => $cart, 'count' => array_sum(array_column($cart, 'qty'))]);
+        return response()->json($cart);
     }
 
     public function updateCart(Request $request)
@@ -92,7 +92,7 @@ class ProductController extends Controller
 
         session()->put('cart', $cart);
 
-        return response()->json(['cart' => $cart, 'count' => array_sum(array_column($cart, 'qty'))]);
+        return response()->json($cart);
     }
 
     public function clearCart()

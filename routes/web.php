@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminController;
@@ -30,8 +29,7 @@ Route::get('/cart', function () {
     return response()->json(session('cart', []));
 })->name('cart.get');
 
-Route::middleware('auth')
-    ->prefix('cart')
+Route::prefix('cart')
     ->name('cart.')
     ->group(function () {
 
@@ -234,7 +232,8 @@ Route::middleware(['auth', 'admin'])
                 Route::delete('/{id}', [ProductController::class, 'destroy'])
                     ->name('delete');
             });
-});
+    });
+
 
 /*
 |--------------------------------------------------------------------------
