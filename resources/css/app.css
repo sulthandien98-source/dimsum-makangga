@@ -2,37 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================
+   GLOBAL
+========================= */
+
+* {
+    font-family: 'Poppins', sans-serif;
+}
+
 html {
     scroll-behavior: smooth;
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
-    @apply bg-gray-50 text-gray-800 dark:bg-zinc-950 dark:text-white;
+    overflow-x: hidden;
 }
 
-.container-app {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar {
+    width: 10px;
 }
 
-.btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white transition duration-300 hover:bg-orange-600 active:scale-95;
+::-webkit-scrollbar-track {
+    background: #f3f4f6;
 }
 
-.card-modern {
-    @apply rounded-2xl bg-white p-5 shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-2xl dark:bg-zinc-900;
+::-webkit-scrollbar-thumb {
+    background: #f97316;
+    border-radius: 999px;
 }
 
-.input-modern {
-    @apply w-full rounded-xl border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:border-zinc-700 dark:bg-zinc-900;
+/* =========================
+   COMPONENTS
+========================= */
+
+@layer components {
+
+    .container-modern {
+        @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+    }
+
+    .card-modern {
+        @apply rounded-3xl bg-white p-5 shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-2xl dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800;
+    }
+
+    .btn-primary {
+        @apply rounded-2xl bg-orange-500 px-5 py-3 font-semibold text-white shadow-lg transition duration-300 hover:scale-105 hover:bg-orange-600 active:scale-95;
+    }
+
+    .btn-secondary {
+        @apply rounded-2xl bg-gray-200 px-5 py-3 font-semibold text-gray-800 transition duration-300 hover:bg-gray-300 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700;
+    }
+
+    .input-modern {
+        @apply w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 outline-none transition duration-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white;
+    }
+
+    .nav-link {
+        @apply rounded-xl px-4 py-2 transition duration-300 hover:bg-orange-100 dark:hover:bg-zinc-800;
+    }
+
+    .badge-modern {
+        @apply rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-600 dark:bg-orange-500/20 dark:text-orange-300;
+    }
+
+    .table-modern {
+        @apply min-w-full overflow-hidden rounded-2xl bg-white shadow-lg dark:bg-zinc-900;
+    }
+
+    .table-modern thead {
+        @apply bg-orange-500 text-white;
+    }
+
+    .table-modern th {
+        @apply px-6 py-4 text-left text-sm font-semibold;
+    }
+
+    .table-modern td {
+        @apply border-b border-gray-100 px-6 py-4 dark:border-zinc-800;
+    }
+
+    .skeleton {
+        @apply animate-pulse rounded-2xl bg-gray-200 dark:bg-zinc-800;
+    }
 }
 
-.nav-link {
-    @apply rounded-xl px-4 py-2 transition duration-300 hover:bg-orange-100 dark:hover:bg-zinc-800;
-}
+/* =========================
+   ANIMATIONS
+========================= */
 
 .fade-in {
-    animation: fadeIn 0.5s ease-in-out;
+    animation: fadeIn 0.5s ease;
+}
+
+.slide-up {
+    animation: slideUp 0.5s ease;
+}
+
+.scale-in {
+    animation: scaleIn 0.3s ease;
+}
+
+.float-animation {
+    animation: floating 3s ease-in-out infinite;
 }
 
 @keyframes fadeIn {
@@ -44,5 +119,80 @@ body {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes floating {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* =========================
+   DARK MODE
+========================= */
+
+.dark body {
+    background: #09090b;
+}
+
+/* =========================
+   MOBILE OPTIMIZATION
+========================= */
+
+@media (max-width: 640px) {
+
+    h1 {
+        font-size: 1.5rem !important;
+    }
+
+    h2 {
+        font-size: 1.25rem !important;
+    }
+
+    .card-modern {
+        @apply rounded-2xl p-4;
+    }
+
+    .btn-primary {
+        @apply w-full text-center;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
     }
 }

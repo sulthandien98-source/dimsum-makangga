@@ -1,160 +1,205 @@
 <!DOCTYPE html>
-<html
-    lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-    x-data="{
-        darkMode: localStorage.getItem('darkMode') === 'true',
-        mobileMenu: false
-    }"
-    x-init="$watch('darkMode', value => localStorage.setItem('darkMode', value))"
-    :class="{ 'dark': darkMode }"
->
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 
 <head>
-
     <meta charset="utf-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"
-    >
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1">
 
-    <title>{{ config('app.name') }}</title>
+    <meta name="csrf-token"
+        content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Dimsum Mak\'Angga') }}</title>
+
+    <link rel="icon"
+        href="{{ asset('favicon.ico') }}">
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     @vite([
         'resources/css/app.css',
         'resources/js/app.js'
     ])
-
 </head>
 
-<body class="bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-white transition-all duration-300">
+<body
+    class="bg-gray-50 text-gray-800 antialiased transition-all duration-300 dark:bg-zinc-950 dark:text-white">
 
-    <!-- NAVBAR -->
+    <div class="min-h-screen">
 
-    <nav class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl shadow-lg">
+        @include('layouts.navigation')
 
-        <div class="container-ui">
+        @if (isset($header))
+            <header
+                class="border-b border-gray-200 bg-white/80 backdrop-blur-lg dark:border-zinc-800 dark:bg-zinc-900/80">
 
-            <div class="flex h-16 items-center justify-between">
-
-                <!-- LOGO -->
-
-                <a
-                    href="/"
-                    class="flex items-center gap-3"
-                >
-
-                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-500 text-lg font-bold text-white shadow-lg">
-                        DM
-                    </div>
-
-                    <div>
-
-                        <h1 class="text-lg font-bold">
-                            Dimsum Mak'Angga
-                        </h1>
-
-                        <p class="text-xs text-gray-500">
-                            Modern Food Ordering
-                        </p>
-
-                    </div>
-
-                </a>
-
-                <!-- DESKTOP MENU -->
-
-                <div class="hidden items-center gap-6 md:flex">
-
-                    <a href="/" class="hover:text-orange-500 transition">
-                        Home
-                    </a>
-
-                    <a href="/menu" class="hover:text-orange-500 transition">
-                        Menu
-                    </a>
-
-                    <a href="/cart" class="hover:text-orange-500 transition">
-                        Keranjang
-                    </a>
-
-                    @auth
-
-                        <a href="/dashboard" class="hover:text-orange-500 transition">
-                            Dashboard
-                        </a>
-
-                    @endauth
-
-                    <button
-                        @click="darkMode = !darkMode"
-                        class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-200 dark:bg-gray-800 transition hover:scale-110"
-                    >
-                        🌙
-                    </button>
-
+                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                    {{ $header }}
                 </div>
 
-                <!-- MOBILE BUTTON -->
+            </header>
+        @endif
 
-                <button
-                    @click="mobileMenu = !mobileMenu"
-                    class="rounded-2xl bg-gray-200 p-2 dark:bg-gray-800 md:hidden"
-                >
-                    ☰
-                </button>
+        <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
-            </div>
+            {{-- SUCCESS TOAST --}}
+            @if (session('success'))
+                <div id="toast-success"
+                    class="mb-6 rounded-2xl border border-green-200 bg-green-500 px-6 py-4 text-white shadow-xl">
 
-            <!-- MOBILE MENU -->
+                    {{ session('success') }}
 
-            <div
-                x-show="mobileMenu"
-                x-transition
-                x-cloak
-                class="space-y-4 py-5 md:hidden"
-            >
+                </div>
+            @endif
 
-                <a href="/" class="block">
-                    Home
-                </a>
+            {{-- ERROR TOAST --}}
+            @if (session('error'))
+                <div id="toast-error"
+                    class="mb-6 rounded-2xl border border-red-200 bg-red-500 px-6 py-4 text-white shadow-xl">
 
-                <a href="/menu" class="block">
-                    Menu
-                </a>
+                    {{ session('error') }}
 
-                <a href="/cart" class="block">
-                    Keranjang
-                </a>
+                </div>
+            @endif
 
-                @auth
+            {{ $slot ?? '' }}
 
-                    <a href="/dashboard" class="block">
-                        Dashboard
-                    </a>
+            @yield('content')
 
-                @endauth
+        </main>
 
-                <button
-                    @click="darkMode = !darkMode"
-                    class="btn-secondary w-full"
-                >
-                    Toggle Dark Mode
-                </button>
+    </div>
 
-            </div>
+    {{-- FLOATING CART MOBILE --}}
+    @auth
+        <a href="{{ route('checkout') }}"
+            class="fixed bottom-5 right-5 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-orange-500 text-2xl text-white shadow-2xl transition duration-300 hover:scale-110 lg:hidden">
 
-        </div>
+            🛒
 
-    </nav>
+        </a>
+    @endauth
 
-    <!-- CONTENT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
 
-    <main class="min-h-screen animate-fade">
+            /*
+            |--------------------------------------------------------------------------
+            | AUTO HIDE TOAST
+            |--------------------------------------------------------------------------
+            */
 
-        @yield('content')
+            const successToast =
+                document.getElementById('toast-success');
 
-    </main>
+            const errorToast =
+                document.getElementById('toast-error');
+
+            if (successToast) {
+
+                setTimeout(() => {
+
+                    successToast.remove();
+
+                }, 3000);
+
+            }
+
+            if (errorToast) {
+
+                setTimeout(() => {
+
+                    errorToast.remove();
+
+                }, 4000);
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | DARK MODE
+            |--------------------------------------------------------------------------
+            */
+
+            const html =
+                document.documentElement;
+
+            const desktopBtn =
+                document.getElementById('theme-toggle');
+
+            const mobileBtn =
+                document.getElementById('theme-toggle-mobile');
+
+            const savedTheme =
+                localStorage.getItem('theme');
+
+            if (savedTheme === 'dark') {
+
+                html.classList.add('dark');
+
+            }
+
+            function toggleTheme() {
+
+                html.classList.toggle('dark');
+
+                localStorage.setItem(
+                    'theme',
+                    html.classList.contains('dark')
+                    ? 'dark'
+                    : 'light'
+                );
+
+            }
+
+            desktopBtn?.addEventListener(
+                'click',
+                toggleTheme
+            );
+
+            mobileBtn?.addEventListener(
+                'click',
+                toggleTheme
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | MOBILE MENU
+            |--------------------------------------------------------------------------
+            */
+
+            const mobileButton =
+                document.getElementById(
+                    'mobile-menu-button'
+                );
+
+            const mobileMenu =
+                document.getElementById(
+                    'mobile-menu'
+                );
+
+            mobileButton?.addEventListener(
+                'click',
+                () => {
+
+                    mobileMenu.classList.toggle(
+                        'hidden'
+                    );
+
+                }
+            );
+
+        });
+    </script>
 
 </body>
 

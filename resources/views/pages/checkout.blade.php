@@ -2,128 +2,256 @@
 
 @section('content')
 
-<div class="max-w-6xl mx-auto px-4">
+@if(empty($cart) || count($cart) === 0)
 
-    <!-- HEADER -->
-    <div class="flex justify-between items-center mb-8">
-        <h2 class="text-3xl font-black text-white flex items-center gap-2">
-            🧾 Checkout
-        </h2>
+<div class="max-w-2xl mx-auto">
 
-        <a href="{{ route('menu') }}"
-           class="px-4 py-2 rounded-xl bg-[#1f1f1f] border border-[#2a2a2a] text-gray-300 hover:bg-[#2a2a2a] transition">
-            ← Kembali
-        </a>
+```
+<div class="card-ui p-10 text-center">
+
+    <div class="text-7xl mb-5">
+        🛒
     </div>
 
-    <div class="grid md:grid-cols-2 gap-6">
+    <h2 class="text-3xl font-bold mb-3">
+        Keranjang Kosong
+    </h2>
 
-        <!-- ================= LEFT: CART ================= -->
-        <div class="bg-[#161616] border border-[#262626] rounded-2xl p-6 shadow-xl text-white">
+    <p class="text-gray-500 mb-8">
+        Silakan pilih menu terlebih dahulu sebelum melakukan checkout.
+    </p>
 
-            <h3 class="font-bold text-xl mb-5 flex items-center gap-2">
-                🛒 Ringkasan Pesanan
-            </h3>
+    <a href="{{ route('menu') }}"
+        class="inline-flex items-center px-6 py-3 rounded-xl bg-orange-500 text-white font-semibold hover:bg-orange-600 transition">
 
-            <div class="space-y-4">
+        Kembali ke Menu
 
-                @foreach($cart as $item)
-                    <div class="flex justify-between items-center border-b border-[#262626] pb-3">
+    </a>
 
-                        <div>
-                            <p class="font-semibold">
-                                {{ $item['name'] }}
-                            </p>
-                            <p class="text-sm text-gray-400">
-                                x{{ $item['qty'] }}
-                            </p>
-                        </div>
+</div>
+```
 
-                        <div class="font-bold text-orange-400">
-                            Rp {{ number_format($item['price'] * $item['qty'],0,',','.') }}
-                        </div>
+</div>
 
-                    </div>
+@else
+
+@php
+$total = collect($cart)->sum(fn($i) => $i['price'] * $i['qty']);
+@endphp
+
+<div class="max-w-6xl mx-auto px-4">
+
+```
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+
+    <h2 class="text-3xl font-black flex items-center gap-3">
+        🧾 Checkout
+    </h2>
+
+    <a href="{{ route('menu') }}"
+        class="inline-flex items-center justify-center px-5 py-3 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 transition">
+
+        ← Kembali
+
+    </a>
+
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    {{-- RINGKASAN PESANAN --}}
+    <div class="rounded-3xl border border-gray-200 bg-white shadow-sm p-6">
+
+        <h3 class="font-bold text-xl mb-6 flex items-center gap-2">
+            🛒 Ringkasan Pesanan
+        </h3>
+
+        <div class="space-y-4">
+
+            @foreach($cart as $item)
+
+            <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+
+                <div>
+
+                    <p class="font-semibold">
+                        {{ $item['name'] }}
+                    </p>
+
+                    <p class="text-sm text-gray-500">
+                        x{{ $item['qty'] }}
+                    </p>
+
+                </div>
+
+                <div class="font-bold text-orange-500">
+
+                    Rp {{ number_format($item['price'] * $item['qty'],0,',','.') }}
+
+                </div>
+
+            </div>
+
+            @endforeach
+
+        </div>
+
+        <div class="mt-6 pt-6 border-t border-gray-200 flex justify-between items-center">
+
+            <span class="font-bold text-lg">
+                Total
+            </span>
+
+            <span class="text-2xl font-black text-green-600">
+
+                Rp {{ number_format($total,0,',','.') }}
+
+            </span>
+
+        </div>
+
+    </div>
+
+    {{-- FORM PEMBELI --}}
+    <div class="rounded-3xl border border-gray-200 bg-white shadow-sm p-6">
+
+        <h3 class="font-bold text-xl mb-6 flex items-center gap-2">
+            📋 Data Pembeli
+        </h3>
+
+        @if ($errors->any())
+
+        <div class="mb-5 rounded-2xl border border-red-200 bg-red-50 p-4">
+
+            <ul class="list-disc pl-5 text-red-600 text-sm space-y-1">
+
+                @foreach ($errors->all() as $error)
+
+                <li>{{ $error }}</li>
+
                 @endforeach
 
-            </div>
-
-            <!-- TOTAL -->
-            @php
-                $total = collect($cart)->sum(fn($i) => $i['price'] * $i['qty']);
-            @endphp
-
-            <div class="mt-6 pt-4 border-t border-[#262626] flex justify-between text-lg font-bold">
-                <span>Total</span>
-                <span class="text-green-400 text-xl">
-                    Rp {{ number_format($total,0,',','.') }}
-                </span>
-            </div>
+            </ul>
 
         </div>
 
-        <!-- ================= RIGHT: FORM ================= -->
-        <div class="bg-[#161616] border border-[#262626] rounded-2xl p-6 shadow-xl text-white">
+        @endif
 
-            <h3 class="font-bold text-xl mb-5 flex items-center gap-2">
-                📋 Data Pembeli
-            </h3>
+        <form method="POST"
+            action="{{ route('checkout.process') }}"
+            id="checkout-form">
 
-            <form method="POST" action="{{ route('checkout.process') }}">
-                @csrf
+            @csrf
 
-                <!-- NAME -->
-                <div class="mb-4">
-                    <label class="text-sm text-gray-400">Nama Lengkap</label>
-                    <input type="text" name="name"
-                        class="w-full mt-1 px-4 py-3 rounded-xl bg-[#0d0d0d] border border-[#262626]
-                               focus:ring-2 focus:ring-orange-500 outline-none text-white"
-                        placeholder="Masukkan nama..."
-                        required>
-                </div>
+            {{-- NAMA --}}
+            <div class="mb-5">
 
-                <!-- PHONE -->
-                <div class="mb-4">
-                    <label class="text-sm text-gray-400">No HP</label>
-                    <input type="text" name="phone"
-                        class="w-full mt-1 px-4 py-3 rounded-xl bg-[#0d0d0d] border border-[#262626]
-                               focus:ring-2 focus:ring-orange-500 outline-none text-white"
-                        placeholder="08xxxxxxxxxx"
-                        required>
-                </div>
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                    Nama Lengkap
+                </label>
 
-                <!-- ADDRESS -->
-                <div class="mb-6">
-                    <label class="text-sm text-gray-400">Alamat Lengkap</label>
-                    <textarea name="address"
-                        class="w-full mt-1 px-4 py-3 rounded-xl bg-[#0d0d0d] border border-[#262626]
-                               focus:ring-2 focus:ring-orange-500 outline-none text-white"
-                        placeholder="Alamat lengkap..."
-                        rows="3"
-                        required></textarea>
-                </div>
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ old('name', auth()->user()->name ?? '') }}"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none"
+                    placeholder="Masukkan nama lengkap"
+                    required>
 
-                <!-- INFO -->
-                <div class="bg-orange-500/10 border border-orange-500/30 text-orange-300 p-3 rounded-xl mb-5 text-sm">
-                    ℹ️ Pastikan data sudah benar sebelum lanjut pembayaran
-                </div>
+            </div>
 
-                <!-- BUTTON -->
-                <button
-                    class="w-full py-3 rounded-xl font-bold text-lg
-                           bg-gradient-to-r from-orange-500 to-orange-600
-                           hover:opacity-90 transition shadow-lg
-                           flex justify-center items-center gap-2">
+            {{-- TELEPON --}}
+            <div class="mb-5">
+
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                    Nomor HP
+                </label>
+
+                <input
+                    type="tel"
+                    name="phone"
+                    value="{{ old('phone') }}"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none"
+                    placeholder="08xxxxxxxxxx"
+                    required>
+
+            </div>
+
+            {{-- ALAMAT --}}
+            <div class="mb-6">
+
+                <label class="block mb-2 text-sm font-medium text-gray-700">
+                    Alamat Lengkap
+                </label>
+
+                <textarea
+                    name="address"
+                    rows="4"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none"
+                    placeholder="Masukkan alamat lengkap"
+                    required>{{ old('address') }}</textarea>
+
+            </div>
+
+            <div class="mb-6 rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-700">
+
+                ℹ️ Pastikan data pesanan dan alamat sudah benar sebelum melanjutkan pembayaran.
+
+            </div>
+
+            <button
+                id="checkout-btn"
+                type="submit"
+                class="w-full py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-lg shadow-lg hover:opacity-95 transition">
+
+                <span id="checkout-text">
 
                     Lanjut ke Pembayaran →
-                </button>
 
-            </form>
+                </span>
 
-        </div>
+            </button>
+
+        </form>
 
     </div>
 
 </div>
+```
+
+</div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const form =
+        document.getElementById('checkout-form');
+
+    const button =
+        document.getElementById('checkout-btn');
+
+    const text =
+        document.getElementById('checkout-text');
+
+    form?.addEventListener('submit', () => {
+
+        button.disabled = true;
+
+        button.classList.add(
+            'opacity-75',
+            'cursor-not-allowed'
+        );
+
+        text.innerHTML =
+            'Memproses Pesanan...';
+
+    });
+
+});
+
+</script>
+
+@endif
 
 @endsection

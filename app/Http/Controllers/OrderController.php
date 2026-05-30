@@ -85,13 +85,15 @@ class OrderController extends Controller
             $total = collect($cart)->sum(fn($item) => $item['price'] * $item['qty']);
 
             $order = Order::create([
-                'user_id'       => Auth::id(),
-                'customer_name' => $checkout['name'],
-                'phone'         => $checkout['phone'],
-                'address'       => $checkout['address'],
-                'total_price'   => $total,
-                'status'        => Order::STATUS_WAITING,
-            ]);
+    'user_id'       => Auth::id(),
+    'customer_name' => $checkout['name'],
+    'phone'         => $checkout['phone'],
+    'address'       => $checkout['address'],
+    'total_price'   => $total,
+
+    'status'         => Order::STATUS_WAITING,
+    'payment_status' => Order::PAYMENT_PENDING,
+]);
 
             foreach ($cart as $productId => $item) {
                 $product = Product::lockForUpdate()->findOrFail($productId);
@@ -248,18 +250,29 @@ class OrderController extends Controller
     */
 
     public function adminOrders()
-    {
-        $orders = Order::with('user')->latest()->paginate(20);
+{
+    $orders = Order::with([
+        'user',
+        'verifier',
+        'rejecter',
+    ])
+    ->latest()
+    ->paginate(20);
 
-        return view('admin.orders.index', compact('orders'));
-    }
+    return view('admin.orders.index', compact('orders'));
+}
 
     public function show($id)
-    {
-        $order = Order::with('items.product', 'user')->findOrFail($id);
+{
+    $order = Order::with([
+        'items.product',
+        'user',
+        'verifier',
+        'rejecter',
+    ])->findOrFail($id);
 
-        return view('admin.orders.show', compact('order'));
-    }
+    return view('admin.orders.show', compact('order'));
+}
 
     public function updateStatus(Request $request, $id)
     {

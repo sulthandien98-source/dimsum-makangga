@@ -1,112 +1,349 @@
 @extends('layouts.app')
 
-@section('title', 'Menunggu Konfirmasi')
+@section('title', 'Status Pesanan')
 
 @section('content')
 
-<div class="max-w-xl mx-auto px-4">
+<div class="max-w-4xl mx-auto px-4 py-6">
 
-    {{-- STATUS HEADER --}}
-    <div class="text-center mb-6">
-        <div class="text-5xl mb-4">⏳</div>
-        <h1 class="text-2xl font-black text-white mb-2">
-            Pesanan Diterima
+    {{-- HEADER --}}
+    <div class="text-center mb-8">
+
+        <div class="text-6xl mb-4 animate-bounce">
+            ⏳
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-black text-gray-900">
+            Status Pesanan
         </h1>
-        <p class="text-amber-200/60 text-sm">
-            Pesanan <span class="text-orange-400 font-bold">#{{ $order->id }}</span> sedang diproses
+
+        <p class="text-gray-500 mt-2">
+            Pantau perkembangan pesanan Anda secara realtime.
         </p>
+
     </div>
 
-    {{-- PAYMENT PROOF STATUS --}}
+    {{-- PAYMENT STATUS --}}
     @if($order->hasPaymentProof())
-    <div class="bg-green-500/10 border border-green-500/30 rounded-2xl p-4 mb-5 flex items-center gap-3">
-        <span class="text-2xl">✅</span>
-        <div>
-            <p class="text-green-400 font-bold text-sm">Bukti Pembayaran Terkirim</p>
-            <p class="text-green-300/60 text-xs">Menunggu verifikasi admin</p>
-        </div>
-    </div>
-    @else
-    <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-4 mb-5">
-        <div class="flex items-center gap-3 mb-3">
-            <span class="text-2xl">⚠️</span>
-            <div>
-                <p class="text-yellow-400 font-bold text-sm">Belum Upload Bukti Pembayaran</p>
-                <p class="text-yellow-300/60 text-xs">Upload sekarang agar pesanan segera diproses</p>
+
+        <div
+            class="bg-green-50 border border-green-200 rounded-3xl p-5 mb-6 shadow-sm"
+        >
+
+            <div class="flex items-center gap-4">
+
+                <div class="text-4xl">
+                    ✅
+                </div>
+
+                <div>
+
+                    <h3
+                        class="font-bold text-green-700"
+                    >
+                        Bukti Pembayaran Berhasil Dikirim
+                    </h3>
+
+                    <p class="text-green-600 text-sm">
+                        Admin sedang melakukan verifikasi pembayaran.
+                    </p>
+
+                </div>
+
             </div>
+
         </div>
-        <a href="{{ route('payment.proof', $order->id) }}"
-           class="block w-full text-center py-2.5 bg-orange-500 hover:bg-orange-600 transition rounded-xl font-bold text-white text-sm">
-            📸 Upload Bukti Pembayaran
-        </a>
-    </div>
+
+    @else
+
+        <div
+            class="bg-yellow-50 border border-yellow-200 rounded-3xl p-5 mb-6 shadow-sm"
+        >
+
+            <div class="flex items-center gap-4 mb-4">
+
+                <div class="text-4xl">
+                    ⚠️
+                </div>
+
+                <div>
+
+                    <h3
+                        class="font-bold text-yellow-700"
+                    >
+                        Bukti Pembayaran Belum Diupload
+                    </h3>
+
+                    <p class="text-yellow-600 text-sm">
+                        Upload bukti transfer agar pesanan segera diproses.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <a
+                href="{{ route('payment.proof',$order->id) }}"
+                class="block text-center bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-2xl font-bold transition"
+            >
+                📸 Upload Bukti Pembayaran
+            </a>
+
+        </div>
+
     @endif
 
-    {{-- REJECTED BANNER --}}
+    {{-- REJECTED --}}
     @if($order->isOrderRejected())
-    <div class="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 mb-5">
-        <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">🚫</span>
-            <p class="text-red-400 font-black text-base">Pesanan Ditolak</p>
+
+        <div
+            class="bg-red-50 border border-red-200 rounded-3xl p-5 mb-6"
+        >
+
+            <div class="flex items-center gap-4 mb-3">
+
+                <div class="text-4xl">
+                    🚫
+                </div>
+
+                <div>
+
+                    <h3
+                        class="font-black text-red-700"
+                    >
+                        Pesanan Ditolak
+                    </h3>
+
+                    <p class="text-red-600 text-sm">
+                        Pesanan tidak dapat diproses.
+                    </p>
+
+                </div>
+
+            </div>
+
+            @if($order->rejection_reason)
+
+                <div
+                    class="bg-white border border-red-200 rounded-2xl p-4 text-red-600"
+                >
+                    {{ $order->rejection_reason }}
+                </div>
+
+            @endif
+
         </div>
-        @if($order->rejection_reason)
-        <p class="text-red-300 text-sm mb-2">{{ $order->rejection_reason }}</p>
-        @endif
-        @if($order->rejected_at)
-        <p class="text-red-400/50 text-xs">
-            Ditolak pada {{ $order->rejected_at->format('d M Y H:i') }}
-        </p>
-        @endif
-    </div>
+
     @endif
 
-    {{-- ORDER DETAIL CARD --}}
-    <div class="card mb-5">
+    {{-- ORDER CARD --}}
+    <div
+        class="bg-white border border-gray-100 rounded-3xl shadow-lg p-6 mb-6"
+    >
 
-        <div class="flex justify-between items-center mb-4">
-            <span class="text-amber-200/60 text-sm">Status</span>
-            @php
-                $colorMap = [
-                    'yellow' => 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-                    'orange' => 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-                    'blue'   => 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-                    'green'  => 'bg-green-500/20 text-green-400 border-green-500/30',
-                    'red'    => 'bg-red-500/20 text-red-400 border-red-500/30',
-                    'gray'   => 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-                ];
-                $cls = $colorMap[$order->status_color] ?? $colorMap['gray'];
-            @endphp
-            <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $cls }}">
+        @php
+
+            $colorMap = [
+                'yellow' => 'bg-yellow-100 text-yellow-700',
+                'orange' => 'bg-orange-100 text-orange-700',
+                'blue'   => 'bg-blue-100 text-blue-700',
+                'green'  => 'bg-green-100 text-green-700',
+                'red'    => 'bg-red-100 text-red-700',
+                'gray'   => 'bg-gray-100 text-gray-700',
+            ];
+
+            $badgeClass =
+                $colorMap[$order->status_color]
+                ?? $colorMap['gray'];
+
+        @endphp
+
+        <div
+            class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6"
+        >
+
+            <div>
+
+                <p class="text-gray-500 text-sm">
+                    Nomor Pesanan
+                </p>
+
+                <h2 class="font-black text-2xl">
+                    #{{ $order->id }}
+                </h2>
+
+            </div>
+
+            <span
+                class="px-4 py-2 rounded-full text-sm font-bold {{ $badgeClass }}"
+            >
                 {{ $order->status_label }}
             </span>
+
         </div>
 
-        <div class="flex justify-between items-center mb-3">
-            <span class="text-amber-200/60 text-sm">Nama</span>
-            <span class="text-white font-semibold text-sm">{{ $order->customer_name }}</span>
+        <div class="grid md:grid-cols-2 gap-4">
+
+            <div
+                class="bg-gray-50 rounded-2xl p-4"
+            >
+
+                <p class="text-gray-500 text-sm mb-1">
+                    Nama Pemesan
+                </p>
+
+                <h3 class="font-bold">
+                    {{ $order->customer_name }}
+                </h3>
+
+            </div>
+
+            <div
+                class="bg-orange-50 rounded-2xl p-4"
+            >
+
+                <p class="text-orange-500 text-sm mb-1">
+                    Total Pembayaran
+                </p>
+
+                <h3
+                    class="font-black text-2xl text-orange-600"
+                >
+                    Rp {{ number_format($order->total_price,0,',','.') }}
+                </h3>
+
+            </div>
+
         </div>
 
-        <div class="flex justify-between items-center mb-3">
-            <span class="text-amber-200/60 text-sm">Total</span>
-            <span class="text-orange-400 font-bold">
-                Rp {{ number_format($order->total_price, 0, ',', '.') }}
-            </span>
-        </div>
+        <div
+            class="mt-6 pt-4 border-t border-gray-100"
+        >
 
-        <div class="border-t border-white/10 pt-3 mt-1">
-            <p class="text-amber-200/30 text-xs text-center">
-                Dibuat: {{ $order->created_at->format('d M Y H:i') }}
+            <p class="text-center text-sm text-gray-500">
+                Dibuat pada
+                {{ $order->created_at->format('d M Y H:i') }}
             </p>
+
         </div>
 
     </div>
 
-    {{-- CTA --}}
-    <a href="{{ route('orders') }}"
-       class="block w-full text-center py-3 bg-white/5 border border-white/10 hover:bg-white/10 transition rounded-xl font-bold text-amber-100 text-sm">
-        Lihat Semua Pesanan
-    </a>
+    {{-- TIMELINE --}}
+    <div
+        class="bg-white border border-gray-100 rounded-3xl shadow-lg p-6 mb-6"
+    >
+
+        <h3
+            class="font-bold text-lg mb-5"
+        >
+            Progress Pesanan
+        </h3>
+
+        <div class="space-y-4">
+
+            <div class="flex items-center gap-4">
+
+                <div
+                    class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center"
+                >
+                    ✓
+                </div>
+
+                <div>
+
+                    <p class="font-semibold">
+                        Pesanan Dibuat
+                    </p>
+
+                    <p class="text-sm text-gray-500">
+                        Pesanan berhasil masuk ke sistem.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="flex items-center gap-4">
+
+                <div
+                    class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center"
+                >
+                    ⏳
+                </div>
+
+                <div>
+
+                    <p class="font-semibold">
+                        Menunggu Verifikasi
+                    </p>
+
+                    <p class="text-sm text-gray-500">
+                        Admin sedang memeriksa pembayaran.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="flex items-center gap-4 opacity-50">
+
+                <div
+                    class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center"
+                >
+                    🚚
+                </div>
+
+                <div>
+
+                    <p class="font-semibold">
+                        Diproses & Dikirim
+                    </p>
+
+                    <p class="text-sm text-gray-500">
+                        Pesanan akan dikirim setelah verifikasi.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {{-- ACTIONS --}}
+    <div
+        class="grid sm:grid-cols-2 gap-4"
+    >
+
+        <a
+            href="{{ route('orders') }}"
+            class="text-center py-4 rounded-2xl border border-gray-200 hover:bg-gray-50 transition font-semibold"
+        >
+            Daftar Pesanan
+        </a>
+
+        <a
+            href="{{ route('menu') }}"
+            class="text-center py-4 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold transition"
+        >
+            Pesan Lagi
+        </a>
+
+    </div>
 
 </div>
+
+{{-- AUTO REFRESH --}}
+<script>
+
+setTimeout(() => {
+
+    location.reload();
+
+}, 30000);
+
+</script>
 
 @endsection
