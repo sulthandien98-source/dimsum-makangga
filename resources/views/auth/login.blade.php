@@ -4,7 +4,6 @@
 
 <div class="flex min-h-screen items-center justify-center px-4 py-10">
 
-```
 <div class="card-ui w-full max-w-md p-8 animate-slide">
 
     <div class="mb-8 text-center">
@@ -124,7 +123,6 @@
     </div>
 
 </div>
-```
 
 </div>
 
