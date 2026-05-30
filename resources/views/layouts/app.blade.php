@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+      class="scroll-smooth dark">
 
 <head>
     <meta charset="utf-8">
@@ -139,14 +140,15 @@
             const mobileBtn =
                 document.getElementById('theme-toggle-mobile');
 
-            const savedTheme =
-                localStorage.getItem('theme');
+            const savedTheme = localStorage.getItem('theme');
 
-            if (savedTheme === 'dark') {
-
-                html.classList.add('dark');
-
-            }
+if (
+    savedTheme === 'dark' ||
+    (!savedTheme &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches)
+) {
+    html.classList.add('dark');
+}
 
             function toggleTheme() {
 

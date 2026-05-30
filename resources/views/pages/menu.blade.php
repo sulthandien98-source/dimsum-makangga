@@ -313,64 +313,52 @@
 </div>
 
 <script>
-
 function cartApp() {
 
     return {
 
         cart: {},
-
         adding: null,
 
         async init() {
 
             try {
 
-                const response =
-                    await fetch('/cart');
+                const response = await fetch('/cart', {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
 
-                const data =
-                    await response.json();
+                if (!response.ok) {
+                    throw new Error('Gagal mengambil cart');
+                }
 
-                this.cart = data || {};
+                this.cart = await response.json();
 
-            } catch (e) {
+            } catch (error) {
 
-                console.log(e);
+                console.error('Cart Init Error:', error);
 
+                this.cart = {};
             }
-
         },
 
         get items() {
 
-            return Object.entries(this.cart)
-                .map(([id, item]) => ({
-
-                    id: Number(id),
-
-                    name: item.name,
-
-                    qty: Number(item.qty),
-
-                    price: Number(item.price),
-
-                }));
-
+            return Object.entries(this.cart).map(([id, item]) => ({
+                id: Number(id),
+                name: item.name,
+                qty: Number(item.qty),
+                price: Number(item.price),
+            }));
         },
 
         get total() {
 
-            return this.items.reduce(
-                (total, item) => {
-
-                    return total +
-                        (item.qty * item.price);
-
-                },
-                0
-            );
-
+            return this.items.reduce((sum, item) => {
+                return sum + (item.qty * item.price);
+            }, 0);
         },
 
         async add(id) {
@@ -379,136 +367,112 @@ function cartApp() {
 
             try {
 
-                const response =
-                    await fetch('/cart/add', {
+                const response = await fetch('/cart/add', {
 
-                        method: 'POST',
+                    method: 'POST',
 
-                        headers: {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]')
+                            .content
+                    },
 
-                            'Content-Type':
-                                'application/json',
+                    body: JSON.stringify({
+                        id: id
+                    })
 
-                            'Accept':
-                                'application/json',
+                });
 
-                            'X-CSRF-TOKEN':
-                                document
-                                    .querySelector(
-                                        'meta[name="csrf-token"]'
-                                    )
-                                    .content
-                        },
+                if (!response.ok) {
+                    throw new Error('Gagal menambah produk');
+                }
 
-                        body: JSON.stringify({
-                            id: id
-                        })
+                this.cart = await response.json();
 
-                    });
+            } catch (error) {
 
-                const data =
-                    await response.json();
+                console.error('Add Cart Error:', error);
 
-                this.cart = data;
-
-            } catch (e) {
-
-                console.log(e);
+                alert('Gagal menambahkan produk ke keranjang.');
 
             } finally {
 
                 this.adding = null;
-
             }
-
         },
 
         async update(id, action) {
 
             try {
 
-                const response =
-                    await fetch('/cart/update', {
+                const response = await fetch('/cart/update', {
 
-                        method: 'POST',
+                    method: 'POST',
 
-                        headers: {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]')
+                            .content
+                    },
 
-                            'Content-Type':
-                                'application/json',
+                    body: JSON.stringify({
+                        id,
+                        action
+                    })
 
-                            'Accept':
-                                'application/json',
+                });
 
-                            'X-CSRF-TOKEN':
-                                document
-                                    .querySelector(
-                                        'meta[name="csrf-token"]'
-                                    )
-                                    .content
-                        },
+                if (!response.ok) {
+                    throw new Error('Gagal update cart');
+                }
 
-                        body: JSON.stringify({
-                            id: id,
-                            action: action
-                        })
+                this.cart = await response.json();
 
-                    });
+            } catch (error) {
 
-                const data =
-                    await response.json();
+                console.error('Update Cart Error:', error);
 
-                this.cart = data;
-
-            } catch (e) {
-
-                console.log(e);
-
+                alert('Gagal mengupdate keranjang.');
             }
-
         },
 
         async clearCart() {
 
             try {
 
-                const response =
-                    await fetch('/cart/clear', {
+                const response = await fetch('/cart/clear', {
 
-                        method: 'POST',
+                    method: 'POST',
 
-                        headers: {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]')
+                            .content
+                    }
 
-                            'Accept':
-                                'application/json',
+                });
 
-                            'X-CSRF-TOKEN':
-                                document
-                                    .querySelector(
-                                        'meta[name="csrf-token"]'
-                                    )
-                                    .content
-                        }
+                if (!response.ok) {
+                    throw new Error('Gagal mengosongkan cart');
+                }
 
-                    });
+                this.cart = await response.json();
 
-                const data =
-                    await response.json();
+            } catch (error) {
 
-                this.cart = data;
+                console.error('Clear Cart Error:', error);
 
-            } catch (e) {
-
-                console.log(e);
-
+                alert('Gagal mengosongkan keranjang.');
             }
-
         }
 
     }
-
 }
-
 </script>
 
 @endsection
